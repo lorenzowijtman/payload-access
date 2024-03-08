@@ -4,6 +4,7 @@ import { PluginConfig, setPluginConfig } from './config';
 const payloadAccess =
   (pluginConfig: PluginConfig): Plugin =>
   (config: Config): Config => {
+    // Set the plugin config as singleton so we can use it in other parts of the package
     setPluginConfig(pluginConfig);
     return {
       ...config,
