@@ -1,9 +1,9 @@
-export type PayloadAccessConfig = {
-    roles: string[];
-    organisations: string[];
-}
+export type PluginConfig = {
+  roles: string[];
+  organisations: string[];
+};
 
-export let config: PayloadAccessConfig = {
-    roles: ['guest', 'editor', 'admin', 'root'],
-    organisations: [],
-}
+export const defaultConfig: PluginConfig = {
+  roles: ['guest', 'editor', 'admin', 'root'],
+  organisations: [],
+};

@@ -1,5 +1,5 @@
 import { roles } from './Vars';
-import { config } from './config';
+import { pluginConfig } from './config';
 
 /*
 Add this field to the user collection to allow the user to be assigned a organisation for access operations
@@ -19,14 +19,14 @@ export const RoleField = ({
   required = true,
   saveToJWT = true,
 }: {
-  defaultValue: keyof typeof config.roles;
+  defaultValue: keyof typeof pluginConfig.roles;
   required: boolean;
   saveToJWT: boolean;
 }) => ({
   name: 'role',
   label: 'Role',
   type: 'select',
-  options: config.roles,
+  options: pluginConfig.roles,
   defaultValue: defaultValue,
   required: required,
   saveToJWT: saveToJWT,
