@@ -1,10 +1,10 @@
-import { config } from './config';
+import { PayloadRequest } from 'payload/dist/types';
 
 /**
  * This function checks the access rights for a collection.
  *
  * @param {Object} params - The parameters for the function.
- * @param {any} params.req - The request object provided by Payload.
+ * @param {PayloadRequest} params.req - The request object provided by Payload.
  * @param {string} [params.allowedRole] - The minimum role level that is allowed to access the collection.
  * @param {string} [params.collectionString] - The slug of the collection.
  * @param {boolean | Object | Function | undefined} [params.userAccess] - The user access rights. Can be a boolean, a GraphQL query (Object) or a function that returns a boolean / GraphQL query.
@@ -18,12 +18,12 @@ export const collectionAccess: any = async ({
   userAccess,
   apiAccess,
 }: {
-  req: any;
+  req: PayloadRequest;
   allowedRole?: string;
   collectionString?: string;
   userAccess?: boolean | Function | Object | undefined;
   apiAccess?: boolean | Function | Object | undefined;
-}) => {
+}): Promise<any> => {
   if (req != null) {
     const { user, collection } = req;
     // Login and personal profile requests should always be allowed in terms of access
@@ -35,7 +35,10 @@ export const collectionAccess: any = async ({
     }
 
     // Only check organisational access if there are organisations in the config
-    if (config.organisations.length > 0) {
+    if (
+      req.config.organisations?.length != null &&
+      req.config.organisations?.length > 0
+    ) {
       var hasCollectionAccess = false;
       if (user?.organisations?.length) {
         // Only accesible when opening a collection page
@@ -77,17 +80,25 @@ export const collectionAccess: any = async ({
       }
     }
 
-    if (user != null) {
-      const userRoleIndex = config.roles.findIndex(role => role == user.role);
-      const allowedRoleIndex = config.roles.findIndex(
-        role => role == allowedRole
-      );
-
-      return userRoleIndex >= 0 && userRoleIndex >= allowedRoleIndex;
-    } else {
+    if (user == undefined) {
       if (apiAccess != undefined && req.method) {
         return apiAccess;
       }
+    }
+
+    if (user != null) {
+      if (userAccess != undefined) {
+        return userAccess;
+      }
+
+      const userRoleIndex = req.config.roles.findIndex(
+        (role: string | undefined) => role == user.role
+      );
+      const allowedRoleIndex = req.config.roles.findIndex(
+        (role: string | undefined) => role == allowedRole
+      );
+
+      return userRoleIndex >= 0 && userRoleIndex >= allowedRoleIndex;
     }
   }
 };
