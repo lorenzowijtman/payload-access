@@ -1,3 +1,4 @@
+import { Field } from 'payload/dist/exports/types';
 import { PayloadRequest } from 'payload/dist/types';
 
 /**
@@ -101,4 +102,32 @@ export const collectionAccess: any = async ({
       return userRoleIndex >= 0 && userRoleIndex >= allowedRoleIndex;
     }
   }
+};
+
+export const accessOwnRecords = async ({
+  req,
+  fieldName,
+}: {
+  req: PayloadRequest;
+  fieldName: string;
+}) => {
+  if (req.user) {
+    // Go through collection fields to see if the userId field exists
+    req.collection.config.fields.forEach((field: any) => {
+      if (field.name == fieldName) {
+        return {
+          fieldName: {
+            equals: req.user.id,
+          },
+        };
+      }
+    });
+
+    return {
+      id: {
+        equals: req.user.id,
+      },
+    };
+  }
+  return false;
 };
